@@ -1,0 +1,15 @@
+from PIL import ImageFont, Image, ImageDraw
+
+ttf = './ttf/GenYoGothic-M.ttc'
+text_size = 25
+font = ImageFont.truetype(ttf, 40)
+print(font.getsize('心'))
+print(font.getoffset('心'))
+width, height = font.getsize('心')
+canvas = Image.new('RGB', [50, 50], (255, 255, 255))
+draw = ImageDraw.Draw(canvas)
+white = "#000000"
+draw.text(((50 - width) / 2, (50 - height) / 2), '心', font=font, fill=white)
+
+filename = "my_drawing.jpg"
+canvas.save(filename)
