@@ -4,11 +4,7 @@ import os
 wordList = []
 ttfList = []
 
-
-
-
-
-with open("./3000chineseword.txt", "r", encoding="utf-8") as f:
+with open("./3000chineseword_filter.txt", "r", encoding="utf-8") as f:
     for str in f.readlines():
         index, char = str.strip().split(",")
         wordList.append(char)
