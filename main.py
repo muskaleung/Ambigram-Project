@@ -85,11 +85,11 @@ class GAN:
     def train(self, epochs, batch_size=128, sample_interval=50):
 
         # Load the dataset
-        (X_train, _), (_, _) = mnist.load_data()
+        (x_train, _), (_, _) = mnist.load_data()
 
         # Rescale -1 to 1
-        X_train = X_train / 127.5 - 1.
-        X_train = np.expand_dims(X_train, axis=3)
+        x_train = x_train / 127.5 - 1.
+        x_train = np.expand_dims(x_train, axis=3)
 
         # Adversarial ground truths
         valid = np.ones((batch_size, 1))
@@ -102,8 +102,8 @@ class GAN:
             # ---------------------
 
             # Select a random batch of images
-            idx = np.random.randint(0, X_train.shape[0], batch_size)
-            imgs = X_train[idx]
+            idx = np.random.randint(0, x_train.shape[0], batch_size)
+            images = x_train[idx]
 
             noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
 
@@ -111,7 +111,7 @@ class GAN:
             gen_imgs = self.generator.predict(noise)
 
             # Train the discriminator
-            d_loss_real = self.discriminator.train_on_batch(imgs, valid)
+            d_loss_real = self.discriminator.train_on_batch(iimagesmgs, valid)
             d_loss_fake = self.discriminator.train_on_batch(gen_imgs, fake)
             d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
 
