@@ -8,6 +8,7 @@ from tensorflow.keras.models import Sequential, Model
 from tensorflow.keras.optimizers import Adam
 
 
+
 class GAN:
     def __init__(self):
         self.img_rows = 28
@@ -27,7 +28,7 @@ class GAN:
         # Build the generator
         self.generator = self.build_generator()
 
-        # The generator takes noise as input and generates imgs
+        # The generator takes noise as input and generates images
         z = Input(shape=(self.latent_dim,))
         img = self.generator(z)
 
@@ -108,11 +109,11 @@ class GAN:
             noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
 
             # Generate a batch of new images
-            gen_imgs = self.generator.predict(noise)
+            gen_images = self.generator.predict(noise)
 
             # Train the discriminator
-            d_loss_real = self.discriminator.train_on_batch(iimagesmgs, valid)
-            d_loss_fake = self.discriminator.train_on_batch(gen_imgs, fake)
+            d_loss_real = self.discriminator.train_on_batch(images, valid)
+            d_loss_fake = self.discriminator.train_on_batch(gen_images, fake)
             d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
 
             # ---------------------
@@ -134,17 +135,19 @@ class GAN:
     def sample_images(self, epoch):
         r, c = 5, 5
         noise = np.random.normal(0, 1, (r * c, self.latent_dim))
-        gen_imgs = self.generator.predict(noise)
+        gen_images = self.generator.predict(noise)
 
         # Rescale images 0 - 1
-        gen_imgs = 0.5 * gen_imgs + 0.5
+        gen_images = 0.5 * gen_images + 0.5
 
         fig, axs = plt.subplots(r, c)
         cnt = 0
         for i in range(r):
             for j in range(c):
-                axs[i, j].imshow(gen_imgs[cnt, :, :, 0], cmap='gray')
+                axs[i, j].imshow(gen_images[cnt, :, :, 0], cmap='gray')
                 axs[i, j].axis('off')
                 cnt += 1
         fig.savefig("images/%d.png" % epoch)
         plt.close()
+
+
