@@ -14,10 +14,10 @@ for name in os.listdir("./ttf"):
         ttfList.append(name)
 print(ttfList)
 
-# for i in range(len(wordList)):
-for i in range(20):
-    if not os.path.exists("./dataset/{}_{}".format(str(i).rjust(4, '0'), wordList[i])):
-        os.makedirs("./dataset/{}_{}".format(str(i).rjust(4, '0'), wordList[i]))
+#for i in range(len(wordList)):
+for i in range(1500):
+    if not os.path.exists("./dataset/{}".format(str(i).rjust(4, '0'))):
+        os.makedirs("./dataset/{}".format(str(i).rjust(4, '0')))
 
     tempX = 0
     for j in range(len(ttfList)):
@@ -30,7 +30,7 @@ for i in range(20):
         canvas = Image.new('RGB', [imageSize, imageSize], (255, 255, 255))
         draw = ImageDraw.Draw(canvas)
         draw.text(((imageSize - width) / 2, (imageSize - height) / 2), wordList[i], font=font, fill="#000000")
-        filename = "./dataset/{}_{}/{}_{}.jpg".format(str(i).rjust(4, '0'), wordList[i], wordList[i], str(tempX).rjust(2,"0"))
+        filename = "./dataset/{}/{}.jpeg".format(str(i).rjust(4, '0'), str(tempX).rjust(2,"0"))
         # filename = "./dataset/{}_{}.jpg".format(wordList[i], ttfList[j])
         canvas.save(filename)
         tempX += 1
