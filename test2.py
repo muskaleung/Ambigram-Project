@@ -13,7 +13,6 @@ train_ds = tf.keras.preprocessing.image_dataset_from_directory(
   data_dir,
   validation_split=0.2,
   subset="training",
-  seed=123,
   image_size=(imageHeight, imageWidth),
   batch_size=batchSize)
 
@@ -21,7 +20,6 @@ val_ds = tf.keras.preprocessing.image_dataset_from_directory(
   data_dir,
   validation_split=0.2,
   subset="validation",
-  seed=123,
   image_size=(imageHeight, imageWidth),
   batch_size=batchSize)
 
@@ -68,13 +66,15 @@ model.compile(
   optimizer='adam',
   loss=tf.losses.SparseCategoricalCrossentropy(from_logits=True),
   metrics=['accuracy'])
-
+'''
 model.fit(
   train_ds,
   validation_data=val_ds,
   epochs=20
 )
+'''
 
+model.train_on_batch()
 loss, acc = model.evaluate(val_ds)
 print("Accuracy", acc)
 

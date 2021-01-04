@@ -1,80 +1,71 @@
 import pathlib
-
-import matplotlib.pyplot as plt
 import tensorflow as tf
+import numpy as np
 from tensorflow.keras import layers
-from tensorflow.keras.models import Sequential
+
+# presetting
 
 data_dir = pathlib.Path("./dataset")
-
-for wordDir in data_dir.iterdir():
-    plt.figure(figsize=(9, 9))
-    i = 1
-
-    if wordDir.is_dir():
-        words = list(wordDir.glob("*"))
-        for word in wordDir.iterdir():
-            # plt.subplot(int(len(words) / 5), 5, i)
-            # plt.imshow(image.imread(word))
-            i += 1
-
-batchSize = 8
+batchSize = 16
 imageHeight = 250
 imageWidth = 250
 
-imageGenerator = tf.keras.preprocessing.image.ImageDataGenerator(validation_split=0.2, )
+def loadDataset():
+    train = tf.keras.preprocessing.image_dataset_from_directory(
+        data_dir,
+        validation_split=0.2,
+        subset="training",
+        seed=123,
+        image_size=(imageHeight, imageWidth),
+        batch_size=batchSize)
 
-train_ds = tf.keras.preprocessing.image.DirectoryIterator(
-    directory=data_dir,
-    image_data_generator=imageGenerator,
-    color_mode="rgb",
-    subset="training",
-    seed=123,
-    target_size=(imageHeight, imageWidth),
-    batch_size=batchSize)
+    val = tf.keras.preprocessing.image_dataset_from_directory(
+        data_dir,
+        validation_split=0.2,
+        subset="validation",
+        seed=123,
+        image_size=(imageHeight, imageWidth),
+        batch_size=batchSize)
 
-val_ds = tf.keras.preprocessing.image.DirectoryIterator(
-    directory=data_dir,
-    image_data_generator=imageGenerator,
-    color_mode="grayscale",
-    subset="validation",
-    seed=123,
-    target_size=(imageHeight, imageWidth),
-    batch_size=batchSize)
+    normalization_layer = tf.keras.layers.experimental.preprocessing.Rescaling(1. / 255)
 
-print(train_ds)
-class_names = train_ds.class_indices
-print(class_names)
+    normalized_ds = train.map(lambda x, y: (normalization_layer(x), y))
+    normalized_valds = val.map(lambda x, y: (normalization_layer(x), y))
+    #normalized_ds = normalized_ds.cache().prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
+    #normalized_valds = normalized_valds.cache().prefetch(buffer_size=tf.data.experimental.AUTOTUNE)
 
-for image_batch, labels_batch in train_ds:
-    print(image_batch.shape)
-    print(labels_batch.shape)
-    break
+    return normalized_ds, normalized_valds
 
-num_classes = 20
 
-model = Sequential([
-    layers.experimental.preprocessing.Rescaling(1. / 255, input_shape=(250, 250, 3)),
-    layers.Conv2D(16, 3, padding='same', activation='relu'),
-    layers.MaxPooling2D(),
-    layers.Conv2D(32, 3, padding='same', activation='relu'),
-    layers.MaxPooling2D(),
-    layers.Conv2D(64, 3, padding='same', activation='relu'),
-    layers.MaxPooling2D(),
-    layers.Flatten(),
-    layers.Dense(128, activation='relu'),
-    layers.Dense(num_classes)
-])
 
-model.compile(optimizer='adam',
-              loss=tf.keras.losses.CategoricalCrossentropy(),
-              metrics=['accuracy'])
+def getModel():
+    model = tf.keras.Sequential([
+        layers.Conv2D(64, 3, activation='relu'),
+        layers.MaxPooling2D(),
+        layers.Conv2D(64, 3, activation='relu'),
+        layers.MaxPooling2D(),
+        layers.Conv2D(64, 3, activation='relu'),
+        layers.MaxPooling2D(),
+        layers.Flatten(),
+        layers.Dense(64, activation='relu'),
+        layers.Dense(1500)
+    ])
+
+    model.compile(
+        optimizer='adam',
+        loss=tf.losses.SparseCategoricalCrossentropy(from_logits=True),
+        metrics=['accuracy'])
+
+    return model
+
+
+train_ds, val_ds = loadDataset()
+
+model = getModel()
+model.fit(
+    train_ds,
+    validation_data=train_ds,
+    epochs=5
+)
 
 model.summary()
-
-epochs = 10
-history = model.fit(
-    train_ds,
-    validation_data=val_ds,
-    epochs=epochs
-)
