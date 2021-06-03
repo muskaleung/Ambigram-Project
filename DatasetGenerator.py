@@ -15,15 +15,15 @@ for name in os.listdir("./ttf"):
 print(ttfList)
 
 #for i in range(len(wordList)):
-for i in range(1500):
+for i in range(10):
     if not os.path.exists("./dataset/{}".format(str(i).rjust(4, '0'))):
         os.makedirs("./dataset/{}".format(str(i).rjust(4, '0')))
 
     tempX = 0
     for j in range(len(ttfList)):
         ttf = "./ttf/{}".format(ttfList[j])
-        text_size = 140
-        imageSize = 250
+        text_size = 32
+        imageSize = 64
 
         font = ImageFont.truetype(ttf, text_size)
         width, height = font.getsize(wordList[i])
